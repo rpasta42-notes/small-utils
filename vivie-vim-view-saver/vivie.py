@@ -2,14 +2,14 @@
 
 import sh, sys
 from utiltools import shellutils
-from shellutils import file_exists, read_file
-from shellutils import expand_link
+from utiltools.shellutils import file_exists, read_file
+from utiltools.shellutils import expand_link
 
 conf_path = '.vivie.conf'
 data_dir = '.vivie/'
 avail_cmd_args = ['setup', 'snapshot', 'help', 'status']
 
-vim_view_path = '~/.vim/view/'
+vim_view_path = expand_link('~/.vim/view/') + '/'
 
 full_home_path = expand_link('~')
 
@@ -48,6 +48,7 @@ def parse_args():
 
 def take_snapshot(file_lst):
    for fpath_orig in file_lst:
+      print('snapshotting:', fpath_orig)
       fpath = expand_link(fpath_orig).replace(full_home_path, '~')
 
       view_name = path_to_vim(fpath)
@@ -71,13 +72,15 @@ def main():
 
    cmd = parse_args()
 
-
    if cmd == 'help':
       print_help()
-   else if cmd == 'setup':
+   elif cmd == 'setup':
       pass
-   else if cmd == 'snapshot':
+   elif cmd == 'snapshot':
       take_snapshot(to_track_lst)
-   else if cmd == 'status':
+   elif cmd == 'status':
       pass
+
+main()
+
 
