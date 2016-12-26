@@ -34,7 +34,6 @@ def path_to_vim(path):
 def path_from_vim(path):
    return path.replace('=+', '/')[:-1]
 
-
 def parse_args():
    args = sys.argv
 
@@ -47,14 +46,32 @@ def parse_args():
    return args[1]
 
 def take_snapshot(file_lst):
-   for fpath_orig in file_lst:
-      print('snapshotting:', fpath_orig)
-      fpath = expand_link(fpath_orig).replace(full_home_path, '~')
+   for local_fpath in file_lst:
+      print('snapshotting:', local_fpath)
+      local_fpath = expand_link(local_fpath).replace(full_home_path, '~')
+      print('after cleanup:', local_fpath)
 
-      view_name = path_to_vim(fpath)
-      view_path = vim_view_path + view_name
-      print('kkkkkkkkkkkk:', view_path)
-      sh.cp(view_path, data_dir + fpath_orig)
+      view_fname = path_to_vim(local_fpath)
+
+      view_fpath = vim_view_path + view_fname
+      view_localdest = data_dir + view_fname
+
+      sh.rm('-Rf', view_localdest)
+      sh.cp(view_fpath, view_localdest)
+
+def run_setup(file_lst):
+   for local_fpath in file_lst:
+      print('setting up:', local_fpath)
+      local_fpath = expand_link(local_fpath).replace(full_home_path, '~')
+
+      view_fname = path_to_vim(local_fpath)
+      #print(view_fname)
+
+      view_dest_path = vim_view_path + view_fname
+      view_local_path = data_dir + view_fname
+      sh.cp(view_local_path, view_dest_path)
+
+
 
 def main():
    #list of paths to track
@@ -66,7 +83,7 @@ def main():
       sys.exit(1)
    else:
       to_track_str = read_file(conf_path)
-      to_track_lst = to_track_str.split('\n')
+      to_track_lst = to_track_str.split('\n')[:-1]
 
    if not file_exists(data_dir):
       sh.mkdir(data_dir)
@@ -76,7 +93,7 @@ def main():
    if cmd == 'help':
       print_help()
    elif cmd == 'setup':
-      pass
+      run_setup(to_track_lst)
    elif cmd == 'snapshot':
       take_snapshot(to_track_lst)
    elif cmd == 'status':
