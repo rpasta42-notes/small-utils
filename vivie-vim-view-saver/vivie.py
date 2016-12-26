@@ -71,8 +71,6 @@ def run_setup(file_lst):
       view_local_path = data_dir + view_fname
       sh.cp(view_local_path, view_dest_path)
 
-
-
 def main():
    #list of paths to track
    to_track_lst = None
