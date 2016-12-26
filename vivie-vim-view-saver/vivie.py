@@ -53,7 +53,8 @@ def take_snapshot(file_lst):
 
       view_name = path_to_vim(fpath)
       view_path = vim_view_path + view_name
-      sh.cp(view_path, fpath_orig)
+      print('kkkkkkkkkkkk:', view_path)
+      sh.cp(view_path, data_dir + fpath_orig)
 
 def main():
    #list of paths to track
