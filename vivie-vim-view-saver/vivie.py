@@ -46,7 +46,11 @@ def run_setup(file_lst):
 def main():
 
    arg_parser = gen_arg_parser()
-   arg_parser.print_help()
+   args = arg_parser.parse_args()
+   print(args)
+
+   print(args.action)
+   #print(args.
 
    #list of paths to track
    to_track_lst = None

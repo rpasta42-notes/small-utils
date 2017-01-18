@@ -2,6 +2,7 @@ import configparser, argparse, sys
 from os.path import join
 from utiltools.shellutils import expand_link
 
+conf_path = '.vivie.conf'
 
 def usage():
    #convert available arguments to string
@@ -40,19 +41,15 @@ def gen_arg_parser():
    '''
 
    p = parser = argparse.ArgumentParser(
-      'vivie',
-      formatter_class=argparse.RawTextHelpFormatter, epilog=init_help)
+         'vivie', epilog=init_help,
+         formatter_class=argparse.RawTextHelpFormatter)
 
-   p.add_argument('--conf-path', nargs='?',
-                  help='give explicit conf file location')
+   conf_path_help = 'give explicit conf file location'
+   p.add_argument('--conf-path', nargs='?', help=conf_path_help, aliases=['c'],
+                  const='.vivie.conf')
 
-
-   p.add_argument('action', nargs='?', choices=['init', 'setup', 'snapshot', 'status'])
-
-   #p.add_argument('init', nargs='?', help='init new project')
-   #p.add_argument('setup', nargs='?', help='setup project data in system')
-   #p.add_argument('snapshot', nargs='?', help='take snapshot of current project')
-   #p.add_argument('status', nargs='?', help='print current status of project')
+   choices=['init', 'setup', 'snapshot', 'status']
+   p.add_argument('action', nargs='?', choices=choices)
 
    return parser
 
