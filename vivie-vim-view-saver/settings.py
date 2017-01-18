@@ -83,7 +83,7 @@ def gen_new_conf(project_name, conf_path=default_conf_path):
    c.set('ProjectSettings', 'TrackByDefault', 'false') #False)
 
    c.add_section('TrackingConfig')
-   include_tracking = ['*.py', '*.md', '*.txt', 'README.md']
+   include_tracking = ['*.py', '*.md', '*.txt', '*.jsx', 'README.md']
    c.set('TrackingConfig', 'Include', ','.join(include_tracking))
    c.set('TrackingConfig', 'Exclude', ','.join(['.vivie/', '*.swp', '.git/']))
 
