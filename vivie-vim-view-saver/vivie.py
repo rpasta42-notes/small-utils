@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sh, sys
+from os.path import join
 from utiltools import shellutils
 from utiltools.shellutils import file_exists, read_file
 from utiltools.shellutils import expand_link, ls
@@ -27,24 +28,27 @@ def take_snapshot(file_lst, conf_path, conf):
       fpath_relative = expand_link(fpath)
       fpath_relative = fpath_relative.replace(full_home_path, '~')
 
-      view_fname = path_to_vim(fpath_relative)
+      view_fpath = join(conf['vim-view-path'],
+                        path_to_vim(fpath_relative))
+
       #print(view_fname)
 
       #project_local_path = fpath.replace(conf_path +'/', './')
+      project_local_path_pretty = path_to_vim(fpath.replace(
+         conf_path + '/', conf['project-name'] + '/'
+      ))
+
       if DEBUG_PRINT:
-         project_local_path_pretty = fpath.replace(
-            conf_path + '/', conf['project-name'] + '/'
-         )
-         #print('local project path:', project_local_path_pretty)
+         print('local project path:', project_local_path_pretty)
 
+      view_local_dest = join(conf['data-dir'],
+                             project_local_path_pretty)
 
+      print(view_local_dest)
+      sh.mkdir('-p', conf['data-dir']) #TODO: absolute path
 
-      continue
-      view_fpath = vim_view_path + view_fname
-      view_localdest = data_dir + view_fname
-
-      sh.rm('-Rf', view_localdest)
-      sh.cp(view_fpath, view_localdest)
+      sh.rm('-Rf', view_local_dest)
+      sh.cp(view_fpath, view_local_dest)
 
 def run_setup(file_lst):
    for local_fpath in file_lst:
