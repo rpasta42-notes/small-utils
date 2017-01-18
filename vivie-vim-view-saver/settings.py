@@ -31,14 +31,28 @@ def parse_args():
 
 
 def gen_arg_parser():
-   p = parser = argparse.ArgumentParser('vivie')
+
+   init_help = '''main actions:
+      init              init new project
+      setup             setup project data in system
+      snapshot          take snapshot of current project
+      status            print current status of project
+   '''
+
+   p = parser = argparse.ArgumentParser(
+      'vivie',
+      formatter_class=argparse.RawTextHelpFormatter, epilog=init_help)
 
    p.add_argument('--conf-path', nargs='?',
                   help='give explicit conf file location')
-   p.add_argument('init', nargs='?', help='init new project')
-   p.add_argument('setup', nargs='?', help='setup project data in system')
-   p.add_argument('snapshot', nargs='?', help='take snapshot of current project')
-   p.add_argument('status', nargs='?', help='print current status of project')
+
+
+   p.add_argument('action', nargs='?', choices=['init', 'setup', 'snapshot', 'status'])
+
+   #p.add_argument('init', nargs='?', help='init new project')
+   #p.add_argument('setup', nargs='?', help='setup project data in system')
+   #p.add_argument('snapshot', nargs='?', help='take snapshot of current project')
+   #p.add_argument('status', nargs='?', help='print current status of project')
 
    return parser
 
