@@ -74,7 +74,13 @@ def dispatch_snapshot_setup(conf, conf_path, project_name, is_setup=False):
          sh.mkdir('-p', data_dir_path)
 
          sh.rm('-Rf', view_local_dest)
-         sh.cp(view_fpath, view_local_dest)
+         try:
+            sh.cp(view_fpath, view_local_dest)
+         except Exception as e:
+            print('===failed to snapshot: ', view_local_dest)
+         except:
+            print('===failed to snapshot: ', view_local_dest)
+
       else:
          sh.rm('-rf', view_fpath)
          sh.cp(view_local_dest, view_fpath)
