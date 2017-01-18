@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser, argparse, sys
 from os.path import join
 from utiltools.shellutils import expand_link
 
@@ -30,10 +30,20 @@ def parse_args():
    return args[1]
 
 
-def gen_new_conf():
-   c = config = ConfigParser.ConfigParser()
+def gen_arg_parser():
+   p = parser = argparse.ArgumentParser('vivie')
 
+   p.add_argument('--conf-path', nargs='?',
+                  help='give explicit conf file location')
+   p.add_argument('init', nargs='?', help='init new project')
+   p.add_argument('setup', nargs='?', help='setup project data in system')
+   p.add_argument('snapshot', nargs='?', help='take snapshot of current project')
+   p.add_argument('status', nargs='?', help='print current status of project')
 
+   return parser
+
+def gen_new_conf(project_name, default_path='.vivie.conf'):
+   c = config = configparser.ConfigParser()
 
    c.add_section('VimSettings')
    vim_view_path = expand_link('~/.vim/view/') + '/'
@@ -41,10 +51,19 @@ def gen_new_conf():
 
    c.add_section('ProjectSettings')
    c.set('ProjectSettings', 'DataDir', '.vivie/')
+   c.set('ProjectSettings', 'ProjectName', project_name)
+   c.set('ProjectSettings', 'TrackByDefault', 'false') #False)
 
-   c.add_section('IncludeExtensions')
-   default_track_extensions = ['*.py', '*.md', '.txt']
-   for ext in default_track_extensions:
-      c.set('IncludeExtensions'
-   default_track_paths = ['README.md'] #default directories/files to track
+   c.add_section('TrackingConfig')
+   include_tracking = ['*.py', '*.md', '*.txt', 'README.md']
+   c.set('TrackingConfig', 'include', ','.join(include_tracking))
+   c.set('TrackingConfig', 'exclude', ','.join(['.vivie/', '*.swp']))
+
+
+   conf_file = open(default_path, 'w')
+   config.write(conf_file)
+   conf_file.close()
+
+
+
 

@@ -4,6 +4,9 @@ import sh, sys
 from utiltools import shellutils
 from utiltools.shellutils import file_exists, read_file
 from utiltools.shellutils import expand_link
+from settings import gen_arg_parser, gen_new_conf
+
+from settings import parse_args, print_help, usage
 
 conf_path = '.vivie.conf'
 data_dir = '.vivie/'
@@ -13,37 +16,6 @@ vim_view_path = expand_link('~/.vim/view/') + '/'
 
 full_home_path = expand_link('~')
 
-def usage():
-   #convert available arguments to string
-   cmd_args_str = ''
-   for arg in avail_cmd_args:
-      cmd_args_str += arg + '|'
-
-   cmd_args_str = cmd_args_str[:-1]
-
-   print('usage: %s [%s]', sys.args[0], cmd_args_str)
-
-def print_help():
-   usage()
-   print('\tsetup = clone vim view from repo folder')
-   print('\tsnapshot = copy vim view files into repo folder')
-
-def path_to_vim(path):
-   return path.replace('/', '=+') + '='
-
-def path_from_vim(path):
-   return path.replace('=+', '/')[:-1]
-
-def parse_args():
-   args = sys.argv
-
-   if len(args) is not 2:
-      return None
-
-   if args[1] not in avail_cmd_args:
-      return None
-
-   return args[1]
 
 def take_snapshot(file_lst):
    for local_fpath in file_lst:
@@ -72,6 +44,10 @@ def run_setup(file_lst):
       sh.cp(view_local_path, view_dest_path)
 
 def main():
+
+   arg_parser = gen_arg_parser()
+   arg_parser.print_help()
+
    #list of paths to track
    to_track_lst = None
 
