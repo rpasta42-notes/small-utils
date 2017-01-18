@@ -2,7 +2,24 @@ import configparser, argparse, sys
 from os.path import join
 from utiltools.shellutils import expand_link
 
-conf_path = '.vivie.conf'
+default_conf_path = '.vivie.conf'
+
+from utiltools.shellutils import file_exists
+from utiltools.shellutils import get_abs_path_relative_to
+
+
+def find_conf_path(conf_fname):
+   su_get_path = get_abs_path_relative_to
+   conf_path = su_get_path(conf_fname, '.')
+
+   while conf_path != '/':
+      test_path = join(conf_path, conf_fname)
+      if file_exists(test_path):
+         return test_path
+
+      conf_path = su_get_path(conf_path) #, '..')
+
+   return None
 
 def usage():
    #convert available arguments to string
@@ -44,9 +61,10 @@ def gen_arg_parser():
          'vivie', epilog=init_help,
          formatter_class=argparse.RawTextHelpFormatter)
 
-   conf_path_help = 'give explicit conf file location'
-   p.add_argument('--conf-path', nargs='?', help=conf_path_help, aliases=['c'],
-                  const='.vivie.conf')
+   p.add_argument('-c', '--conf-path', nargs='?', default=default_conf_path,
+                  help='give explicit conf file location')
+
+   p.add_argument('-p', '--project-name', nargs='?', help='name of new project (use with init only')
 
    choices=['init', 'setup', 'snapshot', 'status']
    p.add_argument('action', nargs='?', choices=choices)
@@ -70,11 +88,8 @@ def gen_new_conf(project_name, default_path='.vivie.conf'):
    c.set('TrackingConfig', 'include', ','.join(include_tracking))
    c.set('TrackingConfig', 'exclude', ','.join(['.vivie/', '*.swp']))
 
-
    conf_file = open(default_path, 'w')
    config.write(conf_file)
    conf_file.close()
-
-
 
 

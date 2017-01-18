@@ -4,7 +4,7 @@ import sh, sys
 from utiltools import shellutils
 from utiltools.shellutils import file_exists, read_file
 from utiltools.shellutils import expand_link
-from settings import gen_arg_parser, gen_new_conf
+from settings import gen_arg_parser, gen_new_conf, find_conf_path
 
 from settings import parse_args, print_help, usage
 
@@ -15,7 +15,6 @@ avail_cmd_args = ['setup', 'snapshot', 'help', 'status']
 vim_view_path = expand_link('~/.vim/view/') + '/'
 
 full_home_path = expand_link('~')
-
 
 def take_snapshot(file_lst):
    for local_fpath in file_lst:
@@ -47,10 +46,15 @@ def main():
 
    arg_parser = gen_arg_parser()
    args = arg_parser.parse_args()
-   print(args)
 
-   print(args.action)
-   #print(args.
+   conf_path = args.conf_path
+   action = args.action
+   project_name = args.project_name
+
+
+   conf_path = find_conf_path(conf_path)
+   print(conf_path)
+   return
 
    #list of paths to track
    to_track_lst = None
