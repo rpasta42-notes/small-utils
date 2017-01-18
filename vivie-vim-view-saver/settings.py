@@ -97,6 +97,20 @@ def gen_new_conf(project_name, conf_path='.vivie.conf'):
 def parse_conf(conf_path):
    settings = configparser.ConfigParser()
    settings.read(conf_path)
-   return settings
+
+   #print(conf.sections())
+
+   return get_conf_data(settings)
+
+def get_conf_data(conf):
+   return {
+      'vim-view-path' : conf.get('VimSettings', 'ViewPath'),
+      'data-dir' : conf.get('ProjectSettings', 'DataDir'),
+      'project-name' : conf.get('ProjectSettings', 'ProjectName'),
+      'track-by-default' : conf.getboolean('ProjectSettings',
+                                           'TrackByDefault'),
+      'include' : conf.get('TrackingConfig', 'Include').split(','),
+      'exclude' : conf.get('TrackingConfig', 'Exclude').split(','),
+   }
 
 
