@@ -13,8 +13,14 @@ su_get_path = get_abs_path_relative_to
 
 from settings import parse_args, print_help, usage
 
+
+#########
+
 DEBUG_PRINT = False
-conf_path = '.vivie.conf'
+
+#conf_path = '.vivie.conf'
+from settings import default_conf_path as conf_path
+from settings import default_conf_path
 data_dir = '.vivie/'
 avail_cmd_args = ['setup', 'snapshot', 'help', 'status']
 
@@ -22,7 +28,22 @@ vim_view_path = expand_link('~/.vim/view/') + '/'
 
 full_home_path = expand_link('~')
 
-def take_snapshot(file_lst, conf_path, conf):
+def dispatch_snapshot_setup(conf, conf_path, project_name, is_setup=False):
+
+   root_path = su_get_path(conf_path)
+   file_paths = ls(root_path, rec=True)
+   #print(files)
+
+   matched = map(
+      lambda path: expand_link(path),
+      get_path_matches(file_paths, conf['include'])
+   )
+   #print(matched)
+
+   #old: f(file_lst, root_path, conf):
+   file_lst = matched
+   ###
+
    for fpath in file_lst:
       #print('snapshotting file:', fpath)
       fpath_relative = expand_link(fpath)
@@ -30,25 +51,33 @@ def take_snapshot(file_lst, conf_path, conf):
 
       view_fpath = join(conf['vim-view-path'],
                         path_to_vim(fpath_relative))
-
       #print(view_fname)
+      view_fpath = expand_link(view_fpath)
 
       #project_local_path = fpath.replace(conf_path +'/', './')
       project_local_path_pretty = path_to_vim(fpath.replace(
-         conf_path + '/', conf['project-name'] + '/'
+         root_path + '/', conf['project-name'] + '/'
       ))
 
       if DEBUG_PRINT:
          print('local project path:', project_local_path_pretty)
 
-      view_local_dest = join(conf['data-dir'],
+      data_dir_path = join(root_path, conf['data-dir'])
+
+      view_local_dest = join(data_dir_path,
                              project_local_path_pretty)
+      view_local_dest = expand_link(view_local_dest)
 
       print(view_local_dest)
-      sh.mkdir('-p', conf['data-dir']) #TODO: absolute path
 
-      sh.rm('-Rf', view_local_dest)
-      sh.cp(view_fpath, view_local_dest)
+      if not is_setup: #snapshot
+         sh.mkdir('-p', data_dir_path)
+
+         sh.rm('-Rf', view_local_dest)
+         sh.cp(view_fpath, view_local_dest)
+      else:
+         sh.rm('-rf', view_fpath)
+         sh.cp(view_local_dest, view_fpath)
 
 def run_setup(file_lst):
    for local_fpath in file_lst:
@@ -76,30 +105,17 @@ def dispatch_init(conf, conf_path, project_name):
    #TODO: create directories, initialize stuff
    pass
 
+def dispatch_status(conf, conf_path, project_name):
+   root_path = su_get_path(conf_path)
+   file_paths = ls(root_path, rec=True)
 
-def dispatch_setup(conf, conf_path, project_name):
-   print(x)
-
-   return
-   to_track_lst = [] #list of paths to track
-   run_setup(to_track_lst)
-
-
-def dispatch_snapshot(conf, conf_path, project_name):
-   conf_path = su_get_path(conf_path)
-   file_paths = ls(conf_path, rec=True)
-   #print(files)
-
-   matched = map(
-      lambda path: expand_link(path),
+   matched = list(map(
+      lambda path: path.replace(root_path, conf['project-name']),
       get_path_matches(file_paths, conf['include'])
-   )
-   #print(matched)
+   ))
 
-   take_snapshot(matched, conf_path, conf)
-
-def dispatch_status(conf, project_name):
-   pass
+   print(matched)
+   return
 
 def main():
 
@@ -111,27 +127,26 @@ def main():
    project_name = args.project_name
 
    conf_path = find_conf_path(conf_path)
-   print(conf_path)
+   #print(conf_path)
 
    conf = None
    if conf_path is not None:
       conf = parse_conf(conf_path)
 
-   if conf is None and action in ['setup', 'snapshot']:
-      print("didn't find conf. can't run command..exiting")
-      return
+   if conf is None and action in ['setup', 'snapshot', None]:
+      return "didn't find conf. can't run command..exiting"
 
    if action == 'init':
-      dispatch_init(conf, conf_path, project_name)
+      #dispatch_init(conf, conf_path, project_name)
+      dispatch_init(conf, default_conf_path, project_name)
    elif action == 'setup':
-      dispatch_setup(conf, conf_path, project_name)
-   elif action == 'snapshot':
-      dispatch_snapshot(conf, conf_path, project_name)
+      dispatch_snapshot_setup(conf, conf_path, project_name, is_setup=True)
+   elif action in 'snapshot':
+      dispatch_snapshot_setup(conf, conf_path, project_name)
    elif action == 'status':
       dispatch_status(conf, conf_path, project_name)
 
-   return
-
+   return "done"
 
    to_track_lst = None
 
@@ -157,6 +172,6 @@ def main():
    elif cmd == 'status':
       pass
 
-main()
+print(main())
 
 
