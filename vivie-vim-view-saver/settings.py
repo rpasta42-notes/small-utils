@@ -33,16 +33,18 @@ def parse_args():
 def gen_new_conf():
    c = config = ConfigParser.ConfigParser()
 
-   vim_view_path = expand_link('~/.vim/view/') + '/'
-   default_track_extensions = ['*.py', '*.md', '.txt']
-   default_track_paths = ['README.md'] #default directories/files to track
 
 
    c.add_section('VimSettings')
-   c.add_section('ProjectConfig')
-   c.add_section('ProjectSettings')
-
+   vim_view_path = expand_link('~/.vim/view/') + '/'
    c.set('VimSettings', 'ViewPath', vim_view_path)
-   c.set('ProjectConfig', 'DataDir', '.vivie/')
 
-   c.set('ProjectSettings', 'extensions_include',
+   c.add_section('ProjectSettings')
+   c.set('ProjectSettings', 'DataDir', '.vivie/')
+
+   c.add_section('IncludeExtensions')
+   default_track_extensions = ['*.py', '*.md', '.txt']
+   for ext in default_track_extensions:
+      c.set('IncludeExtensions'
+   default_track_paths = ['README.md'] #default directories/files to track
+
