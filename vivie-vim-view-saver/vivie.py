@@ -83,19 +83,11 @@ def dispatch_snapshot_setup(conf, conf_path, project_name, is_setup=False):
 
       else:
          sh.rm('-rf', view_fpath)
-         sh.cp(view_local_dest, view_fpath)
+         try:
+            sh.cp(view_local_dest, view_fpath)
+         except:
+            print('===failed to setup: ', view_local_dest)
 
-def run_setup(file_lst):
-   for local_fpath in file_lst:
-      print('setting up:', local_fpath)
-      local_fpath = expand_link(local_fpath).replace(full_home_path, '~')
-
-      view_fname = path_to_vim(local_fpath)
-      #print(view_fname)
-
-      view_dest_path = vim_view_path + view_fname
-      view_local_path = data_dir + view_fname
-      sh.cp(view_local_path, view_dest_path)
 
 
 def dispatch_init(conf, conf_path, project_name):
@@ -179,5 +171,17 @@ def main():
       pass
 
 print(main())
+
+'''def run_setup(file_lst):
+   for local_fpath in file_lst:
+      print('setting up:', local_fpath)
+      local_fpath = expand_link(local_fpath).replace(full_home_path, '~')
+
+      view_fname = path_to_vim(local_fpath)
+      #print(view_fname)
+
+      view_dest_path = vim_view_path + view_fname
+      view_local_path = data_dir + view_fname
+      sh.cp(view_local_path, view_dest_path)'''
 
 
