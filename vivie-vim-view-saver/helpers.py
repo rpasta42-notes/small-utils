@@ -15,7 +15,10 @@ def get_path_matches(paths, patterns, antipatterns=[]):
       bad = False
       for antip in antipatterns:
          if fnmatch(path, antip):
-            continue
+            bad = True
+            break
+      if bad:
+         continue
 
       for pattern in patterns:
          if fnmatch(path, pattern):
