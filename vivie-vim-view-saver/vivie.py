@@ -36,7 +36,7 @@ def dispatch_snapshot_setup(conf, conf_path, project_name, is_setup=False):
 
    matched = map(
       lambda path: expand_link(path),
-      get_path_matches(file_paths, conf['include'])
+      get_path_matches(file_paths, conf['include'], conf['exclude'])
    )
    #print(matched)
 
@@ -117,7 +117,7 @@ def dispatch_status(conf, conf_path, project_name):
 
    matched = list(map(
       lambda path: path.replace(root_path, conf['project-name']),
-      get_path_matches(file_paths, conf['include'])
+      get_path_matches(file_paths, conf['include'], conf['exclude'])
    ))
 
    print(matched)
