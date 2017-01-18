@@ -85,7 +85,7 @@ def gen_new_conf(project_name, conf_path=default_conf_path):
    c.add_section('TrackingConfig')
    include_tracking = ['*.py', '*.md', '*.txt', '*.jsx', 'README.md']
    c.set('TrackingConfig', 'Include', ','.join(include_tracking))
-   c.set('TrackingConfig', 'Exclude', ','.join(['.vivie/', '*.swp', '.git/']))
+   c.set('TrackingConfig', 'Exclude', ','.join(['*node_modules*', '.vivie/', '*.swp', '.git/']))
 
    conf_file = open(conf_path, 'w')
    config.write(conf_file)
