@@ -5,13 +5,14 @@ from utiltools import shellutils
 from utiltools.shellutils import file_exists, read_file
 from utiltools.shellutils import expand_link, ls
 from settings import gen_arg_parser, gen_new_conf, find_conf_path, parse_conf
-from helpers import get_path_matches
+from helpers import get_path_matches, path_to_vim, path_from_vim
 
 from utiltools.shellutils import get_abs_path_relative_to
 su_get_path = get_abs_path_relative_to
 
 from settings import parse_args, print_help, usage
 
+DEBUG_PRINT = False
 conf_path = '.vivie.conf'
 data_dir = '.vivie/'
 avail_cmd_args = ['setup', 'snapshot', 'help', 'status']
@@ -20,14 +21,25 @@ vim_view_path = expand_link('~/.vim/view/') + '/'
 
 full_home_path = expand_link('~')
 
-def take_snapshot(file_lst):
-   for local_fpath in file_lst:
-      print('snapshotting:', local_fpath)
-      local_fpath = expand_link(local_fpath).replace(full_home_path, '~')
-      print('after cleanup:', local_fpath)
+def take_snapshot(file_lst, conf_path, conf):
+   for fpath in file_lst:
+      #print('snapshotting file:', fpath)
+      fpath_relative = expand_link(fpath)
+      fpath_relative = fpath_relative.replace(full_home_path, '~')
 
-      view_fname = path_to_vim(local_fpath)
+      view_fname = path_to_vim(fpath_relative)
+      #print(view_fname)
 
+      #project_local_path = fpath.replace(conf_path +'/', './')
+      if DEBUG_PRINT:
+         project_local_path_pretty = fpath.replace(
+            conf_path + '/', conf['project-name'] + '/'
+         )
+         #print('local project path:', project_local_path_pretty)
+
+
+
+      continue
       view_fpath = vim_view_path + view_fname
       view_localdest = data_dir + view_fname
 
@@ -69,18 +81,18 @@ def dispatch_setup(conf, conf_path, project_name):
    run_setup(to_track_lst)
 
 
-
 def dispatch_snapshot(conf, conf_path, project_name):
    conf_path = su_get_path(conf_path)
    file_paths = ls(conf_path, rec=True)
    #print(files)
 
-   print(get_path_matches(file_paths, conf['include']))
-   print(conf)
-   return
+   matched = map(
+      lambda path: expand_link(path),
+      get_path_matches(file_paths, conf['include'])
+   )
+   #print(matched)
 
-   to_track_lst = [] #list of paths to track
-   take_snapshot(to_track_lst)
+   take_snapshot(matched, conf_path, conf)
 
 def dispatch_status(conf, project_name):
    pass

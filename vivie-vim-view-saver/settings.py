@@ -18,7 +18,6 @@ def find_conf_path(conf_fname):
          return test_path
 
       conf_path = su_get_path(conf_path) #, '..')
-
    return None
 
 def usage():
