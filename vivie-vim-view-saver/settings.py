@@ -71,11 +71,11 @@ def gen_arg_parser():
 
    return parser
 
-def gen_new_conf(project_name, default_path='.vivie.conf'):
+def gen_new_conf(project_name, conf_path='.vivie.conf'):
    c = config = configparser.ConfigParser()
 
    c.add_section('VimSettings')
-   vim_view_path = expand_link('~/.vim/view/') + '/'
+   vim_view_path = '~/.vim/view/' #expand_link('~/.vim/view/') + '/'
    c.set('VimSettings', 'ViewPath', vim_view_path)
 
    c.add_section('ProjectSettings')
@@ -85,11 +85,18 @@ def gen_new_conf(project_name, default_path='.vivie.conf'):
 
    c.add_section('TrackingConfig')
    include_tracking = ['*.py', '*.md', '*.txt', 'README.md']
-   c.set('TrackingConfig', 'include', ','.join(include_tracking))
-   c.set('TrackingConfig', 'exclude', ','.join(['.vivie/', '*.swp']))
+   c.set('TrackingConfig', 'Include', ','.join(include_tracking))
+   c.set('TrackingConfig', 'Exclude', ','.join(['.vivie/', '*.swp']))
 
    conf_file = open(default_path, 'w')
    config.write(conf_file)
    conf_file.close()
+   return config
+
+
+def parse_conf(conf_path):
+   settings = configparser.ConfigParser()
+   settings.read(conf_path)
+   return settings
 
 
