@@ -6,19 +6,9 @@ default_conf_path = '.vivie.conf'
 
 from utiltools.shellutils import file_exists
 from utiltools.shellutils import get_abs_path_relative_to
+from utiltools.shellutils import find_file_recursive_parent
 
-
-def find_conf_path(conf_fname):
-   su_get_path = get_abs_path_relative_to
-   conf_path = su_get_path(conf_fname, '.')
-
-   while conf_path != '/':
-      test_path = join(conf_path, conf_fname)
-      if file_exists(test_path):
-         return test_path
-
-      conf_path = su_get_path(conf_path) #, '..')
-   return None
+find_conf_path = find_file_recursive_parent
 
 def usage():
    #convert available arguments to string
