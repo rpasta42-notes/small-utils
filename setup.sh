@@ -9,6 +9,6 @@ cd vivie-vim-view-saver
 cd ..
 
 cd bin
-chmod a+x *
-cp * /usr/bin
+sudo chmod a+x *
+sudo cp * /usr/bin
 cd ..
